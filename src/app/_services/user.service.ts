@@ -21,5 +21,8 @@ export class UserService {
   closeToDo(id: any): Observable<any> {
     return this.http.put<any>(`${API_URL}/closeToDo/${id}`,{});
   }
+  deleteToDo(id: any): Observable<any> {
+    return this.http.delete<any>(`${API_URL}/delete/${id}`,{});
+  }
 
 }

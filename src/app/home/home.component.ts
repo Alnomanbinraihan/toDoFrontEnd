@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../_services/user.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer,SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
 export class HomeComponent implements OnInit {
   content?: string;
 
-  constructor(private tokenStorage: TokenStorageService, private userService: UserService, private http: HttpClient) { }
+  constructor(private tokenStorage: TokenStorageService, private userService: UserService, private http: HttpClient,private sanitizer: DomSanitizer) { }
 
   roles: any;
   isLoggedIn: boolean = false;
@@ -91,7 +92,6 @@ export class HomeComponent implements OnInit {
       //console.error(response);      
       this.getAll();
 
-
     },
       (error: any) => {
         // Handle error if the API call fails
@@ -142,5 +142,30 @@ export class HomeComponent implements OnInit {
       alert("Please select a pic")
     }
   }
+  deleteToDo(index: number) {
+    this.userService.deleteToDo(this.toDoList[index].id).subscribe((response: any) => {
+      // Handle the API response here      
+      //console.error(response);      
+      this.getAll();
+
+    },
+      (error: any) => {
+        // Handle error if the API call fails
+        console.error('Error:', error);
+        if (error.status == 403) {
+          alert("Only admin can delete To Do")
+        }
+        else if (error.status == 200) {
+          this.getAll();
+        }
+      }
+    );
+  }
+
+  getSafeImageURL(base64Image: string): SafeResourceUrl {
+    const imageSrc = `data:image/*;base64,${base64Image}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(imageSrc);
+  }
+  
 
 }
