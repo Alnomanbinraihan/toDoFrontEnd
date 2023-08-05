@@ -5,9 +5,24 @@
 
   <div>
     <button (click)="create()">Create ToDo</button>
+    <div *ngIf="createToDo">
+      <input type="text" [(ngModel)]="todoName">
+      <button (click)="submit()">submit</button>
+    </div>
   </div>
-  <div *ngIf="createToDo">
-    <input type="text" [(ngModel)]="todoName">
-    <button (click)="submit()">submit</button>
+
+  <div *ngFor="let item of toDoList; let i = index">
+    <input type="text" [disabled]="true" [value]="item.name">
+    <input type="text" [disabled]="true" [value]="item.open==true?'open':'close'">
+    <img src="item.img" alt="Image">
+
+    <button (click)="closeToDo(i)">Close To Do</button>    
+   
+    <form (ngSubmit)="onSubmit(i)" #uploadForm="ngForm">
+      <input type="file" (change)="onFileSelected($event)" accept="image/**" />
+      <button type="submit">Upload</button>
+    </form>
+
   </div>
+  
 </div>

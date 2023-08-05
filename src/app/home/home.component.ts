@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../_services/user.service';
 import { TokenStorageService } from '../_services/token-storage.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -10,10 +11,12 @@ import { TokenStorageService } from '../_services/token-storage.service';
 export class HomeComponent implements OnInit {
   content?: string;
 
-  constructor(private tokenStorage: TokenStorageService,private userService: UserService) { }
+  constructor(private tokenStorage: TokenStorageService,private userService: UserService,private http: HttpClient) { }
 
   roles:any;
   isLoggedIn:boolean=false;
+  selectedFile: File | null = null;
+
   ngOnInit(): void {
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
@@ -25,6 +28,7 @@ export class HomeComponent implements OnInit {
   }
   createToDo: boolean = false;
   todoName: any = "";
+  toDoList:any;
   
   create() {
     this.createToDo = true;
@@ -38,14 +42,20 @@ export class HomeComponent implements OnInit {
     if(!(obj.name == undefined || obj.name == null || obj.name == ""))
     {
     this.userService.createToDo(obj).subscribe((response: any) => {
-      // Handle the API response here
-      console.log('Innnnnnnnnnnnn');
-      this.createToDo = false;
+      // Handle the API response here      
+      //console.error(response);
+      this.todoName="";
+      this.getAll();
+      this.createToDo = false; 
 
     },
       (error: any) => {
         // Handle error if the API call fails
         console.error('Error:', error);
+        if(error.status==403)
+        {
+          alert("Only admin can create new To Do")
+        }
       }
     );
     }
@@ -58,10 +68,13 @@ export class HomeComponent implements OnInit {
 
   getAll() {
     console.log("get all")
+    this.toDoList = [];
     if (this.isLoggedIn) {
       this.userService.getAll().subscribe((response: any) => {
         // Handle the API response here
-        console.log(response);
+        //console.log(response);
+        this.toDoList = response;
+        console.log(this.toDoList);
 
       },
         (error: any) => {
@@ -72,4 +85,60 @@ export class HomeComponent implements OnInit {
     }
 
   }
+
+  closeToDo(index:number) {
+    console.log(index)
+
+    this.userService.closeToDo(this.toDoList[index].id).subscribe((response: any) => {
+      // Handle the API response here      
+      //console.error(response);      
+      this.getAll();
+      
+
+    },
+      (error: any) => {
+        // Handle error if the API call fails
+        console.error('Error:', error);
+        if(error.status==403)
+        {
+          alert("Only admin can close To Do")
+        }
+      }
+    );
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onSubmit(index:any) {
+    if (this.selectedFile) {
+      this.uploadImage(this.selectedFile,this.toDoList[index].id);
+    }
+  }
+
+  uploadImage(file: File, id: number) {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    if (this.selectedFile != null && this.selectedFile != undefined) {
+
+      // Replace 'your-upload-url' with the URL to your server-side image upload endpoint
+      this.http.post<any>('http://localhost:8080/uploadPic/' + id, formData).subscribe(
+        (response) => {
+          // Handle success response
+          this.selectedFile = null;
+          console.log('Image uploaded successfully:', response);
+        },
+        (error) => {
+          // Handle error
+          this.selectedFile = null;
+          console.error('Error uploading image:', error);
+        }
+      );
+    }
+    else {
+      alert("Please select a pic")
+    }
+  }
+
 }

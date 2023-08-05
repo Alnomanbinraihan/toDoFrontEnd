@@ -18,4 +18,8 @@ export class UserService {
     return this.http.get<any>(API_URL+"/getAll");
   }
 
+  closeToDo(id: any): Observable<any> {
+    return this.http.put<any>(`${API_URL}/closeToDo/${id}`,{});
+  }
+
 }
