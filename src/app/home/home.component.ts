@@ -11,10 +11,10 @@ import { HttpClient } from '@angular/common/http';
 export class HomeComponent implements OnInit {
   content?: string;
 
-  constructor(private tokenStorage: TokenStorageService,private userService: UserService,private http: HttpClient) { }
+  constructor(private tokenStorage: TokenStorageService, private userService: UserService, private http: HttpClient) { }
 
-  roles:any;
-  isLoggedIn:boolean=false;
+  roles: any;
+  isLoggedIn: boolean = false;
   selectedFile: File | null = null;
 
   ngOnInit(): void {
@@ -23,13 +23,13 @@ export class HomeComponent implements OnInit {
       console.log(this.tokenStorage.getUser().roles)
       this.roles = this.tokenStorage.getUser().roles;
       //this.router.navigate(['/home']);
-    }    
+    }
     this.getAll();
   }
   createToDo: boolean = false;
   todoName: any = "";
-  toDoList:any;
-  
+  toDoList: any;
+
   create() {
     this.createToDo = true;
   }
@@ -39,31 +39,28 @@ export class HomeComponent implements OnInit {
       name: this.todoName
     }
 
-    if(!(obj.name == undefined || obj.name == null || obj.name == ""))
-    {
-    this.userService.createToDo(obj).subscribe((response: any) => {
-      // Handle the API response here      
-      //console.error(response);
-      this.todoName="";
-      this.getAll();
-      this.createToDo = false; 
+    if (!(obj.name == undefined || obj.name == null || obj.name == "")) {
+      this.userService.createToDo(obj).subscribe((response: any) => {
+        // Handle the API response here      
+        //console.error(response);
+        this.todoName = "";
+        this.getAll();
+        this.createToDo = false;
 
-    },
-      (error: any) => {
-        // Handle error if the API call fails
-        console.error('Error:', error);
-        if(error.status==403)
-        {
-          alert("Only admin can create new To Do")
+      },
+        (error: any) => {
+          // Handle error if the API call fails
+          console.error('Error:', error);
+          if (error.status == 403) {
+            alert("Only admin can create new To Do")
+          }
         }
-      }
-    );
+      );
     }
-    else
-    {
+    else {
       alert("Invalid input")
     }
-   
+
   }
 
   getAll() {
@@ -86,21 +83,20 @@ export class HomeComponent implements OnInit {
 
   }
 
-  closeToDo(index:number) {
+  closeToDo(index: number) {
     console.log(index)
 
     this.userService.closeToDo(this.toDoList[index].id).subscribe((response: any) => {
       // Handle the API response here      
       //console.error(response);      
       this.getAll();
-      
+
 
     },
       (error: any) => {
         // Handle error if the API call fails
         console.error('Error:', error);
-        if(error.status==403)
-        {
+        if (error.status == 403) {
           alert("Only admin can close To Do")
         }
       }
@@ -111,9 +107,9 @@ export class HomeComponent implements OnInit {
     this.selectedFile = event.target.files[0];
   }
 
-  onSubmit(index:any) {
+  onSubmit(index: any) {
     if (this.selectedFile) {
-      this.uploadImage(this.selectedFile,this.toDoList[index].id);
+      this.uploadImage(this.selectedFile, this.toDoList[index].id);
     }
   }
 
@@ -127,11 +123,17 @@ export class HomeComponent implements OnInit {
         (response) => {
           // Handle success response
           this.selectedFile = null;
+          if (response.status == 200) {
+            alert("Image uploaded successfully")
+          }
           console.log('Image uploaded successfully:', response);
         },
         (error) => {
           // Handle error
           this.selectedFile = null;
+          if (error.status == 200) {
+            alert("Image uploaded successfully")
+          }
           console.error('Error uploading image:', error);
         }
       );

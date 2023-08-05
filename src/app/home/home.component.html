@@ -14,7 +14,7 @@
   <div *ngFor="let item of toDoList; let i = index">
     <input type="text" [disabled]="true" [value]="item.name">
     <input type="text" [disabled]="true" [value]="item.open==true?'open':'close'">
-    <img src="item.img" alt="Image">
+    <img [src]="item.img" [alt]="Image">
 
     <button (click)="closeToDo(i)">Close To Do</button>    
    
