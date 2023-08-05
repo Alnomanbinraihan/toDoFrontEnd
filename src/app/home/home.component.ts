@@ -54,6 +54,8 @@ export class HomeComponent implements OnInit {
           console.error('Error:', error);
           if (error.status == 403) {
             alert("Only admin can create new To Do")
+            this.todoName = "";           
+            this.createToDo = false;
           }
         }
       );
@@ -145,6 +147,7 @@ export class HomeComponent implements OnInit {
     }
   }
   deleteToDo(index: number) {
+    if(window.confirm('Are you sure you want to delete?')){
     this.userService.deleteToDo(this.toDoList[index].id).subscribe((response: any) => {
       // Handle the API response here      
       //console.error(response);      
@@ -162,6 +165,7 @@ export class HomeComponent implements OnInit {
         }
       }
     );
+    }
   }
 
   getSafeImageURL(base64Image: string): SafeResourceUrl {
