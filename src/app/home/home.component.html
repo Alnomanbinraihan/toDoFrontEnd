@@ -1,4 +1,4 @@
-<div class="container">
+<div >
   <header class="jumbotron">
     <p>You are logged in as {{roles}}</p>
   </header>
@@ -11,21 +11,22 @@
     </div>
   </div>
 
-  <div *ngFor="let item of toDoList; let i = index">
-    <input type="text" [disabled]="true" [value]="item.name">
-    <input type="text" [disabled]="true" [value]="item.open==true?'open':'close'">
-    
-    <img *ngIf="item.img" [src]="getSafeImageURL(item.img)" alt="Image">  
-
-     
-    <form (ngSubmit)="onSubmit(i)" #uploadForm="ngForm">
+  <div class="todo-item" *ngFor="let item of toDoList; let i = index">
+    <div class="todo-info">
+      <input type="text" [disabled]="true" [value]="item.name">
+      <input type="text" [disabled]="true" [value]="item.open ? 'Open' : 'Close'">
+      <img *ngIf="item.img" [src]="getSafeImageURL(item.img)" alt="Image">
+    </div>
+  
+    <form (ngSubmit)="onSubmit(i)" #uploadForm="ngForm" >
       <input type="file" (change)="onFileSelected($event)" accept="image/**" />
       <button type="submit">Upload</button>
-
-      <button (click)="closeToDo(i)">Close To Do</button>   
-      <button (click)="deleteToDo(i)">Delete</button>   
     </form>
-
+  
+    <div class="todo-buttons">
+      <button (click)="closeToDo(i)">Close To Do</button>
+      <button (click)="deleteToDo(i)">Delete</button>
+    </div>
   </div>
   
-</div>
+  </div>

@@ -125,6 +125,7 @@ export class HomeComponent implements OnInit {
           this.selectedFile = null;
           if (response.status == 200) {
             alert("Image uploaded successfully")
+            this.getAll();
           }
           console.log('Image uploaded successfully:', response);
         },
@@ -133,6 +134,7 @@ export class HomeComponent implements OnInit {
           this.selectedFile = null;
           if (error.status == 200) {
             alert("Image uploaded successfully")
+            this.getAll();
           }
           console.error('Error uploading image:', error);
         }
